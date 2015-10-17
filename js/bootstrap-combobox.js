@@ -25,16 +25,17 @@
 
   var Combobox = function ( element, options ) {
     this.options = $.extend({}, $.fn.combobox.defaults, options);
-    this.template = this.options.template || this.template
     this.$source = $(element);
     this.$container = this.setup();
     this.$element = this.$container.find('input[type=text]');
     this.$target = this.$container.find('input[type=hidden]');
     this.$button = this.$container.find('.dropdown-toggle');
     this.$menu = $(this.options.menu).appendTo('body');
+    this.template = this.options.template || this.template
     this.matcher = this.options.matcher || this.matcher;
     this.sorter = this.options.sorter || this.sorter;
     this.highlighter = this.options.highlighter || this.highlighter;
+    this.allowNewOption = this.options.allowNewOption || false;
     this.shown = false;
     this.selected = false;
     this.refresh();
@@ -138,16 +139,12 @@
         })
         .show();
 
-      $('.dropdown-menu').on('mousedown', $.proxy(this.scrollSafety, this));
-
       this.shown = true;
       return this;
     }
 
   , hide: function () {
       this.$menu.hide();
-      $('.dropdown-menu').off('mousedown', $.proxy(this.scrollSafety, this));
-      this.$element.on('blur', $.proxy(this.blur, this));
       this.shown = false;
       return this;
     }
@@ -260,11 +257,6 @@
     }
   }
 
-  , scrollSafety: function(e) {
-      if (e.target.tagName == 'UL') {
-          this.$element.off('blur');
-      }
-  }
   , clearElement: function () {
     this.$element.val('').focus();
   }
@@ -390,9 +382,17 @@
       this.focused = false;
       var val = this.$element.val();
       if (!this.selected && val !== '' ) {
-        this.$element.val('');
-        this.$source.val('').trigger('change');
-        this.$target.val('').trigger('change');
+        if (this.allowNewOption) {
+            this.$source.append($('<option>').val(val).text(val));
+            this.refresh();
+            this.$element.val(val);
+            this.$source.val(val).trigger('change');
+            this.$target.val(val).trigger('change');
+        } else {
+            this.$element.val('');
+            this.$source.val('').trigger('change');
+            this.$target.val('').trigger('change');
+        }
       }
       if (!this.mousedover && this.shown) {setTimeout(function () { that.hide(); }, 200);}
     }
@@ -423,7 +423,7 @@
         , data = $this.data('combobox')
         , options = typeof option == 'object' && option;
       if(!data) {$this.data('combobox', (data = new Combobox(this, options)));}
-      if (typeof option == 'string') {data[option]();}
+      if (typeof option == 'string') {data[option]();}return data;
     });
   };
 
