@@ -42,6 +42,8 @@ When activating the plugin, you may include an object containing options for the
  `template`: Custom function that returns markup for the combobox.
 
  `bsVersion`: Version of bootstrap being used. This is used by the default `template` function to generate markup correctly. Defaults to '3'. Set to '2' for compatibility with Bootstrap 2
+ 
+ `allowNewOption`: `input`發生`blur`事件時，是否允許輸入不在選項中的文字，如果允許，則會自動將輸入的文字變成選項之一。
 
 ## Dependencies
 Uses the latest 1.X version of jQuery and the latest 2.X or 3.X of bootstrap.
